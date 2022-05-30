@@ -3,6 +3,8 @@ import { Entry } from '../../interfaces';
 import { EntriesContext, entriesReducer } from './';
 import { entriesApi } from '../../apis';
 
+import { useSnackbar } from 'notistack';
+
 export interface EntriesState {
   entries: Entry[];
 }
@@ -13,6 +15,7 @@ const initialState: EntriesState = {
 
 export const EntriesProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const [state, dispatch] = useReducer(entriesReducer, initialState);
+  const { enqueueSnackbar } = useSnackbar();
 
   const addEntry = async (description: string) => {
     try {
@@ -20,12 +23,25 @@ export const EntriesProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         description,
       });
       dispatch({ type: '[ENTRIES] - Add Entry', payload: data });
+      enqueueSnackbar('Entry added', {
+        variant: 'success',
+        autoHideDuration: 3000,
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
     } catch (error) {
       // console.error(error);
+      enqueueSnackbar('Error adding entry', {
+        variant: 'error',
+        autoHideDuration: 3000,
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
     }
   };
 
-  const updateEntry = async ({_id, description, status }: Entry) => {
+  const updateEntry = async (
+    { _id, description, status }: Entry,
+    showSnackbar: boolean = false
+  ) => {
     try {
       const { data } = await entriesApi.put<Entry>(`/entries/${_id}`, {
         description,
@@ -33,7 +49,20 @@ export const EntriesProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       });
 
       dispatch({ type: '[ENTRIES] - Update Entry', payload: data });
-    } catch (error) {}
+      if (showSnackbar)
+        enqueueSnackbar('Entry updated', {
+          variant: 'success',
+          autoHideDuration: 3000,
+          anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        });
+    } catch (error) {
+      // console.error(error);
+      enqueueSnackbar('Error updating entry', {
+        variant: 'error',
+        autoHideDuration: 3000,
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
+    }
   };
 
   const refreshEntries = async () => {
@@ -46,7 +75,7 @@ export const EntriesProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   }, []);
 
   return (
-    <EntriesContext.Provider value={{ ...state, addEntry, updateEntry }}>
+    <EntriesContext.Provider value={{ ...state, addEntry, updateEntry, refreshEntries }}>
       {children}
     </EntriesContext.Provider>
   );

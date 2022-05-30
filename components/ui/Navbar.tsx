@@ -1,5 +1,6 @@
 import { MenuOutlined } from '@mui/icons-material';
-import { AppBar, Toolbar, IconButton, Typography } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Typography, Link } from '@mui/material';
+import NextLink from 'next/link';
 import { useContext } from 'react';
 import { UIContext } from '../../context/ui';
 // import from '@mui/'
@@ -13,7 +14,11 @@ export const Navbar = () => {
         <IconButton size='large' edge='start' onClick={openSideMenu}>
           <MenuOutlined />
         </IconButton>
-        <Typography variant='h6'>Open Jira</Typography>
+        <NextLink href={'/'} passHref>
+          <Link underline='none' color={'white'}>
+            <Typography variant='h6'>Open Jira</Typography>
+          </Link>
+        </NextLink>
       </Toolbar>
     </AppBar>
   );

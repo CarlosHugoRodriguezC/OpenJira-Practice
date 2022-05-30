@@ -24,6 +24,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { useRouter } from 'next/router';
+import { dateFunctions } from '../../utils';
 
 const validStatus: EntryStatus[] = ['pending', 'in-progress', 'finished'];
 
@@ -87,7 +88,7 @@ const EntryPage = ({ entry }: Props) => {
           <Card>
             <CardHeader
               title='Entry'
-              subheader={`Created at ${entry.createdAt} minutes`}
+              subheader={`Created ${dateFunctions.getDistanceFromNow(entry.createdAt)}`}
             />
 
             <CardContent>
